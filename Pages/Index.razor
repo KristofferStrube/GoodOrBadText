@@ -1,0 +1,62 @@
+﻿@page "/"
+@using Microsoft.Extensions.ML;
+@using GoodOrBadTextML.Model;
+@using System.IO;
+@using Microsoft.ML;
+
+Write something and check its vibe:<br />
+<input type="text" @bind=check @bind:event="oninput" width="100" />
+<br />
+
+<p>Status: @status</p>
+<br />
+
+<button @onclick="() => Vibe()">Vibe Check</button>
+
+@code {
+    protected string check;
+
+    protected string status;
+
+    protected async Task Vibe()
+    {
+        if (String.IsNullOrEmpty(check))
+        {
+            status = "neutral";
+            return;
+        }
+
+        var input = new ModelInput { SentimentText = check };
+
+        var prediction = ConsumeModel.Predict(input);
+
+        var sentiment = prediction.Prediction == "1" ? "Toxic" : "Not Toxic";
+
+        status = sentiment;
+    }
+
+    private static Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictionEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(CreatePredictionEngine);
+
+    // For more info on consuming ML.NET models, visit https://aka.ms/mlnet-consume
+    // Method for consuming model in your app
+    public static ModelOutput Predict(ModelInput input)
+    {
+        ModelOutput result = PredictionEngine.Value.Predict(input);
+        return result;
+    }
+
+    public static PredictionEngine<ModelInput, ModelOutput> CreatePredictionEngine()
+    {
+        // Create new MLContext
+        MLContext mlContext = new MLContext();
+
+        var assembly = typeof(Program).Assembly;
+
+        Stream resource = assembly.GetManifestResourceStream($"GoodOrBadText.MLModel.zip");
+        // Load model & create prediction engine
+        ITransformer mlModel = mlContext.Model.Load(resource, out var modelInputSchema);
+        var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
+
+        return predEngine;
+    }
+}

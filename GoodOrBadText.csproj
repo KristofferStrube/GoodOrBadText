@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="MLModel.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="MLModel.zip" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="MLModel.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.0-rc.1.20451.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.0-rc.1.20451.17" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.ML" Version="1.5.2" />
+    <PackageReference Include="System.Net.Http.Json" Version="5.0.0-rc.1.20451.14" />
+  </ItemGroup>
+
+</Project>
